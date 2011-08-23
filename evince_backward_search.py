@@ -18,7 +18,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51 Franklin
 # Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-import dbus, subprocess, time, re
+import dbus, subprocess, time, re, sys, os.path
 
 RUNNING, CLOSED = range(2)
 
@@ -106,10 +106,13 @@ class EvinceWindowProxy:
 
     def on_sync_source(self, input_file, source_link, *args, **kwargs):
         print input_file + ":" + str(source_link[0])
-        cmd = re.sub("%f",input_file,self.editor)
-        cmd = re.sub("%l",str(source_link[0]), cmd)
-        print cmd
-        subprocess.call(cmd, shell=True)
+        sys.stdout.flush()
+        if self.editor:
+            cmd = re.sub("%f",input_file,self.editor)
+            cmd = re.sub("%l",str(source_link[0]), cmd)
+            print cmd
+            subprocess.call(cmd, shell=True)
+
         if self.source_handler is not None:
             self.source_handler(input_file, source_link, *args, **kwargs)
 
@@ -121,7 +124,7 @@ if __name__ == '__main__':
 
     def print_usage():
         print """Usage: 
-  evince_backward_search pdf_file "editorcmd %f %l"'
+  evince_backward_search pdf_file ["editorcmd %f %l"]
     %f ... TeX-file to load
     %l ... line to jump to
 E.g.:
@@ -130,14 +133,19 @@ E.g.:
   evince_backward_search somepdf.pdf "scite %f '-goto:%l'"
   evince_backward_search somepdf.pdf "lyxclient -g %f %l"
   evince_backward_search somepdf.pdf "kate --use --line %l"
-  evince_backward_search somepdf.pdf "kile --line %l" """
+  evince_backward_search somepdf.pdf "kile --line %l" 
+If no command is given, 'file:line' is printed to stdout for each reverse search, e.g., for
+integration into eclipse.
+"""
         sys.exit(1)
 
-    if len(sys.argv)!=3:
+    if len(sys.argv) < 2:
         print_usage()
 
     pdf_file = os.path.abspath(sys.argv[1])
-    editor_cmd = sys.argv[2]
+    editor_cmd = None
+    if len(sys.argv >= 3):
+        editor_cmd = sys.argv[2]
 
     if not os.path.isfile(pdf_file):
         print_usage()
