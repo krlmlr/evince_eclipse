@@ -117,7 +117,7 @@ class EvinceWindowProxy:
 ## This file offers backward search in any editor.
 ##  evince_dbus  pdf_file  line_source input_file
 if __name__ == '__main__':
-    import dbus.mainloop.glib, gobject, glib, sys, os
+    import dbus.mainloop.glib, sys, os
 
     def print_usage():
         print """Usage: 
@@ -143,8 +143,12 @@ E.g.:
         print_usage()
 
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+    run(pdf_file, editor_cmd)
+
+def run(pdf_file, editor_cmd):
+    import gobject
+
     a = EvinceWindowProxy('file://' + pdf_file, editor_cmd, True)
-    
 
     loop = gobject.MainLoop()
     loop.run() 
