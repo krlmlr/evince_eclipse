@@ -137,12 +137,13 @@ E.g.:
         print_usage()
 
     pdf_file = os.path.abspath(sys.argv[1])
+    editor_cmd = sys.argv[2]
 
     if not os.path.isfile(pdf_file):
         print_usage()
 
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-    a = EvinceWindowProxy('file://' + pdf_file, sys.argv[2] ,True)
+    a = EvinceWindowProxy('file://' + pdf_file, editor_cmd, True)
     
 
     loop = gobject.MainLoop()
