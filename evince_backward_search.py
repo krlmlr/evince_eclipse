@@ -38,13 +38,14 @@ class EvinceWindowProxy:
     daemon = None
     bus = None
 
-    def __init__(self, uri, editor, spawn = False, logger = None):
+    def __init__(self, uri, editor, spawn = False, logger = None, on_closed = None):
         self._log = logger
         self.uri = uri
         self.editor = editor
         self.status = CLOSED
         self.source_handler = None
         self.dbus_name = ''
+        self.on_closed = on_closed
         self._handler = None
         try:
             if EvinceWindowProxy.bus is None:
@@ -99,6 +100,8 @@ class EvinceWindowProxy:
             window_obj = EvinceWindowProxy.bus.get_object(self.dbus_name, window_list[0])
             self.window = dbus.Interface(window_obj,EV_WINDOW_IFACE)
             self.window.connect_to_signal("SyncSource", self.on_sync_source)
+            if self.on_closed:
+                self.window.connect_to_signal("Closed", self.on_closed)
         else:
             #That should never happen. 
             if self._log:
@@ -156,7 +159,10 @@ integration into eclipse.
 def run(pdf_file, editor_cmd):
     import gobject
 
-    a = EvinceWindowProxy('file://' + pdf_file, editor_cmd, True)
+    def on_closed():
+        loop.quit()
+
+    a = EvinceWindowProxy('file://' + pdf_file, editor_cmd, True, on_closed = on_closed)
 
     loop = gobject.MainLoop()
     loop.run() 
