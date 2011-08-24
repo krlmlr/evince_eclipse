@@ -38,7 +38,7 @@ class EvinceWindowProxy:
     daemon = None
     bus = None
 
-    def __init__(self, uri, editor, spawn = False, logger = None, on_closed = None):
+    def __init__(self, uri, editor, logger = None, on_closed = None):
         self._log = logger
         self.uri = uri
         self.editor = editor
@@ -58,7 +58,7 @@ class EvinceWindowProxy:
             EvinceWindowProxy.bus.add_signal_receiver(self._on_doc_loaded, signal_name="DocumentLoaded", 
                                                       dbus_interface = EV_WINDOW_IFACE, 
                                                       sender_keyword='sender')
-            self._get_dbus_name(False)
+            self._get_dbus_name()
 
         except dbus.DBusException:
             if self._log:
@@ -68,8 +68,9 @@ class EvinceWindowProxy:
         if uri == self.uri and self._handler is None:
             self.handle_find_document_reply(keyargs['sender'])
         
-    def _get_dbus_name(self, spawn):
-        EvinceWindowProxy.daemon.FindDocument(self.uri,spawn,
+    def _get_dbus_name(self):
+        spawn = False
+        EvinceWindowProxy.daemon.FindDocument(self.uri, spawn,
                      reply_handler=self.handle_find_document_reply,
                      error_handler=self.handle_find_document_error,
                      dbus_interface = EV_DAEMON_IFACE)
