@@ -104,14 +104,14 @@ class EvinceWindowProxy:
             if self._log:
                 self._log.debug("GetWindowList returned empty list")
 
-    def on_sync_source(self, input_file, source_link, time):
+    def on_sync_source(self, input_file, source_link, *args, **kwargs):
         print input_file + ":" + str(source_link[0])
         cmd = re.sub("%f",input_file,self.editor)
         cmd = re.sub("%l",str(source_link[0]), cmd)
         print cmd
         subprocess.call(cmd, shell=True)
         if self.source_handler is not None:
-            self.source_handler(input_file, source_link, time)
+            self.source_handler(input_file, source_link, *args, **kwargs)
 
 
 ## This file offers backward search in any editor.
