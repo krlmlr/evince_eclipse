@@ -109,6 +109,9 @@ class EvinceWindowProxy:
                 self._log.debug("GetWindowList returned empty list")
 
     def on_sync_source(self, input_file, source_link, *args, **kwargs):
+        m = re.match("^file\://+(/.*)$", input_file)
+        if m is not None:
+            input_file = m.group(1)
         print input_file + ":" + str(source_link[0])
         sys.stdout.flush()
         if self.editor:
