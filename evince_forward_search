@@ -22,6 +22,7 @@
 
 import dbus, dbus.mainloop.glib, subprocess, time, sys, os, re
 import evince_backward_search as ebs
+from gi.repository import Gtk
     
 def print_usage():
     print 'Usage: evince_forward_search pdf_file line_number[:column_number] tex_file' 
@@ -52,7 +53,11 @@ try:
 except dbus.DBusException:
     print_exc()
 
-window.SyncView(tex_file, (line_number, column_number), dbus_interface="org.gnome.evince.Window")
+try:
+    window.SyncView(tex_file, (line_number, column_number), dbus_interface="org.gnome.evince.Window")
+except TypeError:
+    timestamp = Gtk.get_current_event_time()
+    window.SyncView(tex_file, (line_number, column_number), timestamp, dbus_interface="org.gnome.evince.Window")
 
 ebs.run(pdf_file, None)
 
