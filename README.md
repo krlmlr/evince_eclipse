@@ -11,3 +11,7 @@ as PDF viewer in eclipse. It will do the forward search and also
 attach to Evince, read its SyncTeX events
 and write them to stdout just the way eclipse expects it (via the
 `eclipse_backward_search.py` module).
+
+This is related to the following post to the evince mailing list:
+
+https://mail.gnome.org/archives/evince-list/2011-August/msg00018.html
